@@ -53,7 +53,7 @@ st.header("The fruit load list contains:")
 def get_fruit_load_list():
   with my_cnx.cursor() as my_cur:
     my_cur.execute("select * from fruit_load_list")
-  return my_cur.fetchall()
+    return my_cur.fetchall()
 
 # add button to load list
 if st.button('Get Fruit Load List'):
@@ -66,7 +66,7 @@ st.stop()
 def insert_row_snowflake(new_fruit):
   with my_cnx.cursor() as my_cur:
     my_cur.execute("insert into fruit_load_list values ('from streamlit')")
-  return f'Thanks for adding {new_fruit}'
+    return f'Thanks for adding {new_fruit}'
 
 # let the user add another fruit to the list
 add_my_fruit = st.text_input('What fruit would you like to add?')
