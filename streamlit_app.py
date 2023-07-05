@@ -4,6 +4,8 @@ import requests
 
 import snowflake.connector
 
+from urllib.error import URLError
+
 
 st.title('My Parents New Healthy Diner')
 
@@ -27,16 +29,19 @@ st.dataframe(fruits_to_show)
 
 # Fruityvice data
 st.header("Fruityvice Fruit Advice!")
-fruit_choice = st.text_input('What fruit would you like information about?','Kiwi')
-st.write('The user entered ', fruit_choice)
-
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice.lower())
-
-# normalize the json object
-fruityvice_normalized = pd.json_normalize(fruityvice_response.json())
-# shows json response as dataframe
-st.dataframe(fruityvice_normalized)
-
+try:
+  fruit_choice = st.text_input('What fruit would you like information about?')
+  if not fruit_choice:
+    st.error('Please select a fruit to get information.)
+  else:
+    fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice.lower())
+    fruityvice_normalized = pd.json_normalize(fruityvice_response.json())
+    st.dataframe(fruityvice_normalized)
+    
+except URLError as e:
+  st.error()
+  
+st.stop()
 # Snowflake
 my_cnx = snowflake.connector.connect(**st.secrets["snowflake"])
 my_cur = my_cnx.cursor()
@@ -48,5 +53,4 @@ st.dataframe(my_data_row)
 # let the user add another fruit to the list
 add_my_fruit = st.text_input('What fruit would you like to add?','jackfruit')
 st.text(f'Thanks for adding {add_my_fruit}')
-# my_cur = my_cnx.cursor()
-# my_cur.execute("select * from fruit_load_list")
+my_cur.execute("insert into fruit_load_list values ('from streamlit')")
